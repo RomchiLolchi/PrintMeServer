@@ -1,0 +1,128 @@
+openapi: "3.0.3"
+info:
+  title: "PrintMe Docs"
+  description: "PrintMe Docs"
+  version: "0.0.3"
+paths:
+  /:
+    get:
+      tags:
+        - Frontend
+      description: "Serves main page"
+      responses:
+        "200":
+          description: "Site html file"
+          content:
+            'text/html':
+              schema:
+                type: object
+        "204":
+          description: "No Content"
+          content:
+            'text/plain':
+              schema:
+                type: "string"
+              example: ""
+  /api/printme/SetAttributesAndGetPrinters:
+    post:
+      tags:
+        - Backend
+      description: "Gets printing attributes from clients and responds with a list of printers names"
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/ServiceAttributeSet"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'text/plain':
+              schema:
+                type: "array"
+                items:
+                  type: "string"
+              example: "[\"Brother DCP-T300\", \"Fax\", \"Another Printer Name\"]"
+  /api/printme/SetChosenPrinterByName:
+    post:
+      tags:
+        - Backend
+      description: "Gets user selected printer name from client (in original form!)"
+      requestBody:
+        content:
+          'text/plain':
+            schema:
+              type: string
+              example: "Brother DCP-T300"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'text/plain':
+              schema:
+                type: string
+                example: ""
+  /api/printme/PostFile:
+    post:
+      tags:
+        - Backend
+      requestBody:
+        content:
+          'multipart/form-data':
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+        required: true
+      description: "Gets user selected file to print from client"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'text/plain':
+              schema:
+                type: string
+                example: ""
+  /api/printme/StartPrinting:
+    get:
+      tags:
+        - Backend
+      description: "Puts new print job with previously selected attributes in printer's queue"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'text/plain':
+              schema:
+                type: string
+                example: ""
+components:
+  schemas:
+    PlainText:
+      description: Just regular text
+      type: string
+    ListOfStrings:
+      type: array
+      items:
+        type: string
+      description: List containing some strings
+    ServiceAttributeSet:
+      type: "object"
+      properties:
+        copies:
+          type: "integer"
+          format: "int32"
+          default: 1
+        orientation:
+          type: "string"
+          default: "portrait"
+          enum:
+            - "portrait"
+            - "landscape"
+        colorPrint:
+          type: "boolean"
+          default: false
